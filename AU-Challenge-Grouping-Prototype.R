@@ -15,12 +15,18 @@ pacman::p_load(tidyverse, readr, groupdata2, anticlust) # in the order that they
 #part data
 
 
- data_part <- read.csv2("C:/Users/Jedrek/Documents/R_random_stuff/test_participants.csv") # dataset from merethe (same structure as the final one but fewer participants)
- setwd("C:/Users/Jedrek/Documents/Github/Grouping-participants")
- # probably not GDPR friendly so I will censor it a bit and then make it available for download online
- colnames(data_part)[1] <- "first.name" # first col had bogus name, needed changing
- data_part <- data_part %>% select(-c(Mobile.phone,Last.name,Email,CV,Motivated.application, first.name, Student.number))
- write.csv(data_part, file = "test_participants_censored.csv") # save it
+# data_part <- read.csv2("C:/Users/Jedrek/Documents/R_random_stuff/test_participants.csv") # dataset from merethe (same structure as the final one but fewer participants)
+
+# setwd("C:/Users/Jedrek/Documents/Github/Grouping-participants")
+
+# probably not GDPR friendly so I will censor it a bit and then make it available for download online
+
+# colnames(data_part)[1] <- "first.name" # first col had bogus name, needed changing
+
+# data_part <- data_part %>% select(-c(Mobile.phone,Last.name,Email,CV,Motivated.application, first.name, Student.number))
+
+# write.csv(data_part, file = "test_participants_censored.csv") # save it
+
 # set up download from github
 csv <- "https://raw.githubusercontent.com/jedrekmiecznikowski/Grouping-participants/main/test_participants_censored.csv"
 
