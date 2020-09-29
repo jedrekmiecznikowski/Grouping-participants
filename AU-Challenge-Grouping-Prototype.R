@@ -1,7 +1,7 @@
 
 # I use pacman for package management, but you can do the regular install.packages and library/require
 require(pacman)
-pacman::p_load(tidyverse, groupdata2, anticlust)
+pacman::p_load(tidyverse, readr, groupdata2, anticlust) # in the order that they are used
 
 
 # simulated data I trained on before getting a better one
@@ -14,17 +14,19 @@ data_sim <- tibble(id = seq(1, 144, 1),
 
 #part data
 
-  
- data_part <- read.csv2("C:/Users/Jedrek/Documents/R-random-stuff/test_participants.csv") # dataset from merethe (same structure as the final one but fewer participants)
-# probably not GDPR friendly so I will censor it a bit and then make it available for download online
+
+ data_part <- read.csv2("C:/Users/Jedrek/Documents/R_random_stuff/test_participants.csv") # dataset from merethe (same structure as the final one but fewer participants)
+ setwd("C:/Users/Jedrek/Documents/Github/Grouping-participants")
+ # probably not GDPR friendly so I will censor it a bit and then make it available for download online
  colnames(data_part)[1] <- "first.name" # first col had bogus name, needed changing
  data_part <- data_part %>% select(-c(Mobile.phone,Last.name,Email,CV,Motivated.application, first.name))
-
+ write.csv(data_part, file = "test_participants_censored.csv") # save it
 # set up download from github
-csv <- "https://github.com/jedrekmiecznikowski/Grouping-participants/blob/main/test_participants2.csv"
+csv <- "https://raw.githubusercontent.com/jedrekmiecznikowski/Grouping-participants/main/test_participants_censored.csv"
 
-data_part <- read.csv2(csv)
+data_part <- read_csv(csv)
 
+# ok now we're off to the races
 
 View(data_part) # looksie
 
