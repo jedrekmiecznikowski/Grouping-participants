@@ -5,9 +5,9 @@ pacman::p_load(tidyverse, readr, groupdata2, anticlust) # in the order that they
 
 
 # simulated data I trained on before getting a better one
-data_sim <- tibble(id = seq(1, 144, 1),
-                   faculty = c(rep("Arts", 45), rep("BSS", 64), rep("STH", 35)),
-                   dominant = sample(1:4, 144, replace = T))
+#data_sim <- tibble(id = seq(1, 144, 1),
+#                   faculty = c(rep("Arts", 45), rep("BSS", 64), rep("STH", 35)),
+#                   dominant = sample(1:4, 144, replace = T))
 
 # not gonna be useful, I'll simulate some based on the few entries Merethe sent me
 
@@ -19,7 +19,7 @@ data_sim <- tibble(id = seq(1, 144, 1),
  setwd("C:/Users/Jedrek/Documents/Github/Grouping-participants")
  # probably not GDPR friendly so I will censor it a bit and then make it available for download online
  colnames(data_part)[1] <- "first.name" # first col had bogus name, needed changing
- data_part <- data_part %>% select(-c(Mobile.phone,Last.name,Email,CV,Motivated.application, first.name))
+ data_part <- data_part %>% select(-c(Mobile.phone,Last.name,Email,CV,Motivated.application, first.name, Student.number))
  write.csv(data_part, file = "test_participants_censored.csv") # save it
 # set up download from github
 csv <- "https://raw.githubusercontent.com/jedrekmiecznikowski/Grouping-participants/main/test_participants_censored.csv"
