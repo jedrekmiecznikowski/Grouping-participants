@@ -109,3 +109,72 @@ plot(as.factor(data_folded2$NEW))
 
 # now for clarity I will append the dropped observations (if it doesn't div by 4) to the frame
 
+## OK THE REAL DEAL ##
+
+#load
+data_part <- read.csv2("~/Deltagerliste AU Challenge 2020.csv")
+# white space trailing because manual input of some participants
+data_part$X1st.priority.case.company <- trimws(data_part$X1st.priority.case.company)
+data_part$Faculty <- trimws(data_part$Faculty)
+# classify cols correctly 
+data_part$X1st.priority.case.company <- as.factor(data_part$X1st.priority.case.company)
+data_part$Faculty <- as.factor(data_part$Faculty)
+
+# check how many peeps in groups
+data_part %>% group_by(X1st.priority.case.company) %>% summarise(n=n())
+
+# need to change a weird name into a proper one
+data_part[data_part=="AURA Energi/Novozymes"] <- "AURA Energi"
+data_part %>% group_by(X1st.priority.case.company) %>% summarise(n=n())
+# check faculty
+data_part %>% group_by(Faculty) %>% summarise(n=n())
+# group faculties
+data_part <- data_part %>% mutate("Faculty_grouped" = ifelse(Faculty=="Natural Sciences" | Faculty == "Technical Sciences" | Faculty == "Health", "AaaaNatur|Technic|Health", as.character(Faculty)),
+                                  "Faculty_grouped2" = ifelse(Faculty=="Natural Sciences" | Faculty == "Technical Sciences" | Faculty == "Health" | Faculty == "Arts", "Arts|Natur|Technic|Health", as.character(Faculty)))
+# plot
+# did it work
+plot(as.factor(data_part$Faculty_grouped))
+plot(as.factor(data_part$Faculty_grouped2))
+
+# subset
+
+data_novozymes <- subset(data_part,X1st.priority.case.company == "Novozymes")
+data_danskebank <- subset(data_part,X1st.priority.case.company == "Danske Bank")
+data_aura <- subset(data_part,X1st.priority.case.company == "AURA Energi")
+
+# wrap into function?
+# doesn't work, prob will do later
+
+data_novozymes <-  fold(data_novozymes, k = 10, method = "n_rand", cat_col = "Faculty_grouped2")
+GROUPED <- data_novozymes %>%
+  group_by(.folds) %>%
+  summarise(n = n())
+plot(GROUPED)
+
+data_novozymes$.folds <- as.numeric(data_novozymes$.folds)
+# cluster into a vector
+bc <- balanced_clustering(data_novozymes %>% select(.folds), 10)
+# add new column to the data set
+data_novozymes$GROUPS <- bc
+# check even groups visually
+plot(as.factor(data_novozymes$GROUPS))
+
+# all good now clean and write back to csv
+data_novozymes%>% ungroup() %>%  select(-c(.folds,Faculty_grouped, Faculty_grouped2)) %>% arrange(GROUPS) %>%  write.csv2(file = "Novozymes_groups.csv")
+
+# ok back to the function
+group.observations.hetero <- function(df,n,n_groups,ColNew) {
+  df <-  fold(df, k = n, method = "n_rand", cat_col = "Faculty_grouped2" )
+  df$.folds <- as.numeric(df$.folds)
+  bc <- balanced_clustering(df %>% select(.folds), n_groups)
+  df[,ColNew] <- bc
+  return(df)
+  
+  
+}
+# save aura
+group.observations.hetero(data_aura,10,10,"GROUPS") %>% ungroup() %>%  select(-c(.folds,Faculty_grouped, Faculty_grouped2)) %>% arrange(GROUPS) %>% write.csv2(file="AURA_groups.csv")
+# save danske bank
+group.observations.hetero(data_danskebank,6,10,"GROUPS") %>% ungroup() %>%  select(-c(.folds,Faculty_grouped, Faculty_grouped2)) %>% arrange(GROUPS) %>% write.csv2(file="Danskebank_groups.csv")
+# save the dropped observations
+data_part %>% subset(X1st.priority.case.company=="") %>%  ungroup() %>%  select(-c(Faculty_grouped, Faculty_grouped2)) %>% write.csv2(file="Undecided_participants.csv")
